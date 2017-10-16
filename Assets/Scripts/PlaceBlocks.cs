@@ -8,9 +8,6 @@ public class PlaceBlocks : MonoBehaviour
     public GameObject prefab1;
     public GameObject prefab2;
 
-    //private int gridCubeWidth = 16;
-    //private int gridCubeHeight = 16;
-    //private int gridCubeLength = 16;
     private GameObject selectedPrefab;
 
 	void Start ()

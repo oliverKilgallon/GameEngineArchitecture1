@@ -6,6 +6,13 @@ public class Movement : MonoBehaviour {
 
     public float speed = 10;
     public float rotSpeed = 5;
+
+    private Quaternion startRot;
+
+    void Start()
+    {
+        startRot = gameObject.transform.rotation;
+    }
     public void Move()
     {
         float horiz = Input.GetAxis("Horizontal");
@@ -22,5 +29,10 @@ public class Movement : MonoBehaviour {
 
         transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
         transform.position += movement * speed * Time.deltaTime;
+    }
+
+    public void ResetRot()
+    {
+        transform.rotation = startRot;
     }
 }

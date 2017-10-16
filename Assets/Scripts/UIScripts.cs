@@ -28,7 +28,7 @@ public class UIScripts : MonoBehaviour
 
     void isEditorOn()
     {
-        if (player.getIsInEditor().Equals(true))
+        if (player.getIsInEditor())
         {
             editorText.text = "ON";
         }
