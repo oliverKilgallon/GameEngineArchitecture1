@@ -39,10 +39,6 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.GetComponent<Rigidbody>().AddForce(new Vector3(0, jumpForce, 0));
         }
-        if (Input.GetKeyUp("r"))
-        {
-            gameObject.GetComponent<Movement>().ResetRot();
-        }
     }
 
     private void EditorCheck()
