@@ -9,9 +9,10 @@ public class Movement : MonoBehaviour
     public float rotSpeed = 5;
     
     private Quaternion startRot;
-    private bool resetRot = false;
+    //private bool resetRot = false;
     private bool rotating = false;
-    private float resetSpeed = 1f;
+    
+    //private float resetSpeed = 1f;
 
     void Start()
     {
@@ -24,8 +25,8 @@ public class Movement : MonoBehaviour
         float vert = Input.GetAxis("Vertical");
         float xRot = Input.GetAxis("xRot");
 
-        Vector3 forward = Camera.main.transform.TransformDirection(Vector3.forward);
-
+        Vector3 forward = gameObject.transform.TransformDirection(Vector3.forward);
+        
         forward.y = 0f;
         forward = forward.normalized;
 
@@ -43,36 +44,42 @@ public class Movement : MonoBehaviour
     {
         if (Input.GetKeyUp("r"))
         {
-            if (gameObject.GetComponent<PlayerController>() == null)
-            {
-                if (gameObject.name.Equals("Main Camera"))
-                {
-                    gameObject.GetComponent<Movement>().ResetRot();
-                }
-            }
-            if (gameObject.GetComponent<PlayerController>() != null)
-            {
-                gameObject.GetComponent<Movement>().ResetRot();
-            }
+            HardResetRot();
         }
+        //if (Input.GetKeyUp("r") && !rotating)
+        //{
+        //    if (gameObject.GetComponent<PlayerController>() == null)
+        //    {
+        //        if (gameObject.name.Equals("Main Camera"))
+        //        {
+        //            gameObject.GetComponent<Movement>().ResetRot();
+        //        }
+        //    }
+        //    if (gameObject.GetComponent<PlayerController>() != null)
+        //    {
+        //        gameObject.GetComponent<Movement>().ResetRot();
+        //    }
+        //}
         
-        if (resetRot.Equals(true))
-        {
-            if (!transform.rotation.Equals(startRot))
-            {
-                rotating = true;
-                transform.rotation = Quaternion.Lerp(transform.rotation, startRot, resetSpeed * (Time.time % 1));
-            }
-            else
-            {
-                rotating = false;
-                resetRot = false;
-            }
-        }
+        //if (rotating.Equals(true))
+        //{
+        //    if (!transform.rotation.Equals(startRot))
+        //    {
+        //        transform.rotation = Quaternion.Lerp(transform.rotation, startRot, resetSpeed * (Time.time % 1));
+        //    }
+        //    else
+        //    {
+        //        rotating = false;
+        //    }
+        //}
     }
-    public void ResetRot()
+    //public void ResetRot()
+    //{
+    //    rotating = true;
+    //}
+
+    public void HardResetRot()
     {
-        //transform.rotation = startRot;
-        resetRot = true;
+        transform.rotation = startRot;
     }
 }

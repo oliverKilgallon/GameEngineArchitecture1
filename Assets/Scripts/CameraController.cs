@@ -10,15 +10,18 @@ public class CameraController : MonoBehaviour
     private Vector3 startPos;
     private Quaternion startRot;
 
-	void Start ()
-    {
+    private Vector3 offset;
 
-	}
-	
-	void Update ()
+    void Start()
+    {
+        offset = transform.position - player.transform.position;
+    }
+
+    void Update()
     {
         ProcessInputs();
-        if (player.GetComponent<PlayerController>().getIsInEditor().Equals(true))
+        transform.LookAt(player.transform);
+        if (PlayerController.isInEditor.Equals(true))
         {
             gameObject.GetComponent<Movement>().Move();
         }
@@ -32,14 +35,22 @@ public class CameraController : MonoBehaviour
 
     void ProcessInputs()
     {
-        if (Input.GetKeyDown("f") && player.GetComponent<PlayerController>().getIsInEditor().Equals(false))
+        if (Input.GetKeyDown("f") && PlayerController.isInEditor.Equals(false))
         {
             startPos = transform.position;
             startRot = transform.rotation;
         }
-        if (Input.GetKeyDown("f") && player.GetComponent<PlayerController>().getIsInEditor().Equals(true))
+        if (Input.GetKeyDown("f") && PlayerController.isInEditor.Equals(true))
         {
             ResetPos();
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (PlayerController.isInEditor.Equals(false))
+        {
+            transform.position = player.transform.position + offset;
         }
     }
 }

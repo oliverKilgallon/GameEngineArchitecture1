@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public GameObject editor;
-    public bool isInEditor = false;
+    public static bool isInEditor = false;
     public float speed;
     public float rotSpeed;
     public float jumpForce;

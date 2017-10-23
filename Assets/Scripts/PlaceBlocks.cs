@@ -52,7 +52,8 @@ public class PlaceBlocks : MonoBehaviour
         {
             if (hit.transform != null)
             {
-                Instantiate(selectedPrefab, hit.point, Quaternion.identity);
+                GameObject newObj = Instantiate(selectedPrefab, hit.point, Quaternion.identity);
+                //newObj.transform.position = ClampPos(newObj.transform.position, 1f);
             }
         }
     }
@@ -69,5 +70,14 @@ public class PlaceBlocks : MonoBehaviour
                 Destroy(hit.transform.gameObject);
             }
         }
+    }
+
+    Vector3 ClampPos(Vector3 position, float clampIncrement)
+    {
+        return new Vector3 (
+            Mathf.Floor(position.x / clampIncrement) * clampIncrement,
+            Mathf.Floor(position.y / clampIncrement) * clampIncrement,
+            Mathf.Floor(position.z / clampIncrement) * clampIncrement
+            );
     }
 }
