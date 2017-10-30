@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         ProcessInputs();
-        transform.LookAt(player.transform);
+        
         if (PlayerController.isInEditor.Equals(true))
         {
             gameObject.GetComponent<Movement>().Move();
@@ -50,7 +50,14 @@ public class CameraController : MonoBehaviour
     {
         if (PlayerController.isInEditor.Equals(false))
         {
+            transform.LookAt(player.transform);
+            Debug.Log("Working");
             transform.position = player.transform.position + offset;
+            //transform.rotation = Quaternion.Euler(
+            //    transform.rotation.eulerAngles.x,
+            //    player.transform.rotation.eulerAngles.y,
+            //    transform.rotation.eulerAngles.z
+            //);
         }
     }
 }

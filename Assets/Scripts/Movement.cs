@@ -7,6 +7,7 @@ public class Movement : MonoBehaviour
 
     public float speed = 10;
     public float rotSpeed = 5;
+    public GameObject player;
     
     private Quaternion startRot;
     //private bool resetRot = false;
@@ -35,7 +36,15 @@ public class Movement : MonoBehaviour
 
         if (!rotating)
         {
-            transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
+            if (!PlayerController.isInEditor)
+            {
+                transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
+            }
+            else
+            {
+                transform.RotateAround(player.transform.position, Vector3.up, xRot * rotSpeed);
+            }
+            
             transform.position += movement * speed * Time.deltaTime;
         }
     }
