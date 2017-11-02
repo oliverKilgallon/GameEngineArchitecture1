@@ -10,9 +10,8 @@ public class Movement : MonoBehaviour
     public GameObject player;
     
     private Quaternion startRot;
+
     //private bool resetRot = false;
-    private bool rotating = false;
-    
     //private float resetSpeed = 1f;
 
     void Start()
@@ -33,25 +32,22 @@ public class Movement : MonoBehaviour
 
         Vector3 right = new Vector3(forward.z, 0f, -forward.x);
         Vector3 movement = horiz * right + vert * forward;
-
-        if (!rotating)
+        
+        if (PlayerController.isInEditor)
         {
-            if (!PlayerController.isInEditor)
-            {
-                transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
-            }
-            else
-            {
-                transform.RotateAround(player.transform.position, Vector3.up, xRot * rotSpeed);
-            }
-            
-            transform.position += movement * speed * Time.deltaTime;
+            transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
         }
+        else
+        {
+            transform.RotateAround(player.transform.position, Vector3.up, xRot * rotSpeed);
+        }
+        
+        transform.position += movement * speed * Time.deltaTime;
     }
 
     void Update()
     {
-        if (Input.GetKeyUp("r"))
+        if (Input.GetKeyUp("r") && !PlayerController.isInEditor)
         {
             HardResetRot();
         }
