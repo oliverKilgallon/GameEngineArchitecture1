@@ -6,8 +6,6 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject editor;
     public static bool isInEditor = false;
-    public float speed;
-    public float rotSpeed;
     public float jumpForce;
 
     public delegate void ModeChange();
@@ -47,9 +45,11 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.GetComponent<Movement>().Move();
             editor.SetActive(false);
+            gameObject.GetComponent<Rigidbody>().isKinematic = false;
         }
         else if (isInEditor.Equals(true))
         {
+            gameObject.GetComponent<Rigidbody>().isKinematic = true;
             editor.SetActive(true);
         }
     }

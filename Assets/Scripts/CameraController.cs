@@ -12,10 +12,23 @@ public class CameraController : MonoBehaviour
 
     private Vector3 offset;
 
+    void Awake()
+    {
+        SpawnPlayer.playerCreate += ParentCamera;
+    }
+
+    void OnDisable()
+    {
+        SpawnPlayer.playerCreate -= ParentCamera;
+    }
+
     void Start()
     {
+        
+    }
+    void ParentCamera()
+    {
         gameObject.transform.SetParent(player.transform);
-        offset = transform.position - player.transform.position;
     }
 
     void Update()
@@ -40,11 +53,13 @@ public class CameraController : MonoBehaviour
         {
             startPos = transform.position;
             startRot = transform.rotation;
+
             gameObject.transform.SetParent(null);
         }
         if (Input.GetKeyDown("f") && PlayerController.isInEditor.Equals(true))
         {
             ResetPos();
+
             gameObject.transform.SetParent(player.transform);
         }
     }
@@ -54,12 +69,6 @@ public class CameraController : MonoBehaviour
         if (PlayerController.isInEditor.Equals(false))
         {
             transform.LookAt(player.transform);
-            transform.position = player.transform.position + offset;
-            //transform.rotation = Quaternion.Euler(
-            //    transform.rotation.eulerAngles.x,
-            //    player.transform.rotation.eulerAngles.y,
-            //    transform.rotation.eulerAngles.z
-            //);
         }
     }
 }

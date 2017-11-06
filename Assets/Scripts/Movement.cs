@@ -11,9 +11,6 @@ public class Movement : MonoBehaviour
     
     private Quaternion startRot;
 
-    //private bool resetRot = false;
-    //private float resetSpeed = 1f;
-
     void Start()
     {
         startRot = gameObject.transform.rotation;
@@ -32,14 +29,15 @@ public class Movement : MonoBehaviour
 
         Vector3 right = new Vector3(forward.z, 0f, -forward.x);
         Vector3 movement = horiz * right + vert * forward;
-        
+
+        //If player is in editor, rotate around camera pos, else rotate around "player" pos
         if (PlayerController.isInEditor)
         {
             transform.RotateAround(transform.position, Vector3.up, xRot * rotSpeed);
         }
         else
         {
-            transform.RotateAround(player.transform.position, Vector3.up, xRot * rotSpeed);
+            player.transform.RotateAround(player.transform.position, player.transform.up, xRot * rotSpeed);
         }
         
         transform.position += movement * speed * Time.deltaTime;
@@ -51,37 +49,7 @@ public class Movement : MonoBehaviour
         {
             HardResetRot();
         }
-        //if (Input.GetKeyUp("r") && !rotating)
-        //{
-        //    if (gameObject.GetComponent<PlayerController>() == null)
-        //    {
-        //        if (gameObject.name.Equals("Main Camera"))
-        //        {
-        //            gameObject.GetComponent<Movement>().ResetRot();
-        //        }
-        //    }
-        //    if (gameObject.GetComponent<PlayerController>() != null)
-        //    {
-        //        gameObject.GetComponent<Movement>().ResetRot();
-        //    }
-        //}
-        
-        //if (rotating.Equals(true))
-        //{
-        //    if (!transform.rotation.Equals(startRot))
-        //    {
-        //        transform.rotation = Quaternion.Lerp(transform.rotation, startRot, resetSpeed * (Time.time % 1));
-        //    }
-        //    else
-        //    {
-        //        rotating = false;
-        //    }
-        //}
     }
-    //public void ResetRot()
-    //{
-    //    rotating = true;
-    //}
 
     public void HardResetRot()
     {
