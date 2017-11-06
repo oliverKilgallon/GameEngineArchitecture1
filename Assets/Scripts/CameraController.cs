@@ -29,6 +29,7 @@ public class CameraController : MonoBehaviour
     void ParentCamera()
     {
         gameObject.transform.SetParent(player.transform);
+        transform.position = new Vector3(0f, transform.position.y, 0f);
     }
 
     void Update()
