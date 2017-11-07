@@ -18,20 +18,28 @@ public class PlaceBlocks : MonoBehaviour
 {
 
     public GameObject[] prefabs;
-    public GameObject PlayerBlockManager;
+    public int blockLimit = 12;
+    public GameObject playerBlockManager;
+
+    public delegate void BlockChange(int blockNum);
+    public static event BlockChange blockSwitch;
 
     private GameObject selectedPrefab;
-    private GameObject[] blocksPlaced;
+    private int blocksPlaced;
 
-	void Start ()
+    void Start ()
     {
         selectedPrefab = prefabs[0];
+        blocksPlaced = 0;
 	}
 	
 
 	void Update ()
     {
-        EditorControls();
+        if (PlayerController.isInEditor)
+        {
+            EditorControls();
+        }
     }
 
     void EditorControls()
@@ -46,32 +54,49 @@ public class PlaceBlocks : MonoBehaviour
         }
         else if (Input.GetKeyUp("1"))
         {
-            Debug.Log("Switching to block 1");
-            selectedPrefab = prefabs[0];
+            if (blockSwitch != null)
+            {
+                selectedPrefab = prefabs[0];
+                blockSwitch(0);
+            }
         }
         else if (Input.GetKeyUp("2"))
         {
-            Debug.Log("Switching to block 2");
-            selectedPrefab = prefabs[1];
+            if (blockSwitch != null)
+            {
+                selectedPrefab = prefabs[1];
+                blockSwitch(1);
+            }
         }
         else if (Input.GetKeyUp("3"))
         {
-            Debug.Log("Switching to block 3");
-            selectedPrefab = prefabs[2];
+            if (blockSwitch != null)
+            {
+                selectedPrefab = prefabs[2];
+                blockSwitch(2);
+            }
         }
     }
 
     void AddBlock()
     {
-        RaycastHit hit;
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        if (blocksPlaced < blockLimit)
         {
-            if (hit.transform != null && !hit.transform.CompareTag("Undeletable"))
+            RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
             {
-                GameObject newObj = Instantiate(selectedPrefab, hit.transform.position + getDisplacement(getFaceClicked(hit)), Quaternion.identity);
-                newObj.transform.parent = PlayerBlockManager.transform;
+                if (hit.transform != null && !hit.transform.CompareTag("Undeletable"))
+                {
+                    GameObject newObj = Instantiate(selectedPrefab, hit.transform.position + hit.normal, Quaternion.identity);
+                    newObj.transform.parent = playerBlockManager.transform;
+                }
             }
+            blocksPlaced++;
+        }
+        else
+        {
+            Debug.Log("Limit reached!");
         }
     }
 
@@ -85,6 +110,10 @@ public class PlaceBlocks : MonoBehaviour
             {
                 Destroy(hit.transform.gameObject);
             }
+        }
+        if ((blocksPlaced - 1) > 0)
+        {
+            blocksPlaced--;
         }
     }
 

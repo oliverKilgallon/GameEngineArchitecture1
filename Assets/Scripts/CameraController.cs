@@ -22,14 +22,9 @@ public class CameraController : MonoBehaviour
         SpawnPlayer.playerCreate -= ParentCamera;
     }
 
-    void Start()
-    {
-        
-    }
     void ParentCamera()
     {
-        gameObject.transform.SetParent(player.transform);
-        transform.position = new Vector3(0f, transform.position.y, 0f);
+        transform.SetParent(player.transform);
     }
 
     void Update()
