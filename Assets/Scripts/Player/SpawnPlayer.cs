@@ -9,7 +9,8 @@ public class SpawnPlayer : MonoBehaviour {
     public static event PlayerSpawn playerCreate;
     void Start ()
     {
-        Instantiate(playerPrefab, transform.position, Quaternion.identity);
+        GameObject player = Instantiate(playerPrefab, transform.position, Quaternion.identity);
+        player.name = playerPrefab.name;
         if (playerCreate != null)
         {
             playerCreate();

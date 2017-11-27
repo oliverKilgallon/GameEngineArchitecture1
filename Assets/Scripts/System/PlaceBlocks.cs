@@ -26,10 +26,8 @@ public class PlaceBlocks : MonoBehaviour
 
     private GameObject selectedPrefab;
     private int blocksPlaced;
-
     void Start ()
     {
-        gameObject.SetActive(true);
         selectedPrefab = prefabs[0];
         blocksPlaced = 0;
 	}
@@ -89,9 +87,12 @@ public class PlaceBlocks : MonoBehaviour
                 if (hit.transform != null && !hit.transform.CompareTag("Undeletable"))
                 {
                     GameObject newObj = Instantiate(selectedPrefab, hit.transform.position + hit.normal, Quaternion.identity);
+                    newObj.name = selectedPrefab.name;
+                    BlockManager.blockManager.AddBlock(newObj);
                     newObj.transform.parent = playerBlockManager.transform;
                 }
             }
+            Debug.Log(BlockManager.blockManager.GetListItems());
             blocksPlaced++;
         }
         else
@@ -106,8 +107,9 @@ public class PlaceBlocks : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && (blocksPlaced - 1) > 0)
+            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && (blocksPlaced - 1) >= 0)
             {
+                BlockManager.blockManager.RemoveBlock(hit.transform.gameObject.GetInstanceID());
                 Destroy(hit.transform.gameObject);
                 blocksPlaced--;
             }

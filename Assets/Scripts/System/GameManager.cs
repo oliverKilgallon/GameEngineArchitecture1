@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public int blocksUsed;
     public Transform[] blockTransforms;
     private string[] seperatingChars = {";", "|"};
+    private string dataString;
 
 	void Awake ()
     {
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour {
 
         List<SaveData> objs = new List<SaveData>();
 
-        string[] objects = new string[5];
+        string[] objects = new string[BlockManager.blockManager.GetList().Count + 1];
 
         objects = objectData.Split(seperatingChars, System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour {
         {
             str.Split();
             SaveData data = new SaveData();
-            data.objectIndex = System.Convert.ToInt32(objects[0]);
+            data.objectName = objects[0];
             //data.position = objects[1];
             //data.rotation = objects[2];
             objs.Add(data);
@@ -56,10 +57,37 @@ public class GameManager : MonoBehaviour {
             List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
             foreach(SaveData sd in data)
             {
-                //Instantiate(prefab[sd.objectIndex], sd.position, sd.rotation);
+                Instantiate(Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), sd.position, sd.rotation);
             }
             file.Close();
         }
+    }
+
+    public void SetDataString()
+    {
+        List<GameObject> objList = BlockManager.blockManager.GetList();
+        foreach (GameObject go in objList)
+        {
+            dataString += go.name + ";";
+
+            dataString += go.transform.position.x + ";";
+            dataString += go.transform.position.y + ";";
+            dataString += go.transform.position.z + ";";
+
+            dataString += go.transform.rotation.x + ";";
+            dataString += go.transform.rotation.y + ";";
+            dataString += go.transform.rotation.z + ";";
+            dataString += go.transform.rotation.w + ";";
+
+            dataString += go.transform.localScale.x + ";";
+            dataString += go.transform.localScale.y + ";";
+            dataString += go.transform.localScale.z + ";";
+        }
+    }
+
+    public string GetDataString()
+    {
+        return dataString;
     }
 }
 
@@ -68,6 +96,5 @@ class SaveData
 {
     public Vector3 position;
     public Quaternion rotation;
-    public int objectIndex;
-    public Transform[] blockTransforms;
+    public string objectName;
 }
