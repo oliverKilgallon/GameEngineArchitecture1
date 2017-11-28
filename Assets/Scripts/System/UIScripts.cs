@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIScripts : MonoBehaviour
 {
@@ -17,14 +18,15 @@ public class UIScripts : MonoBehaviour
 
     private int currentlySelected;
     private int playerBlockAmount;
+    private Color[] defBlockColours;
 
     public void Awake()
     {
         PlayerController.modeSwitch += isEditorOn;
         PlayerController.escapePressed += TogglePauseMenu;
         PlaceBlocks.blockSwitch += selectImage;
-        PlaceBlocks.blockAdd += SetBlockCount;
-        PlaceBlocks.blockRemove += SetBlockCount;
+        PlaceBlocks.blockSet += SetBlockCount;
+        SceneManager.sceneLoaded += LevelLoaded;
     }
 
     public void OnDisable()
@@ -32,17 +34,22 @@ public class UIScripts : MonoBehaviour
         PlayerController.modeSwitch -= isEditorOn;
         PlayerController.escapePressed -= TogglePauseMenu;
         PlaceBlocks.blockSwitch -= selectImage;
-        PlaceBlocks.blockAdd -= SetBlockCount;
-        PlaceBlocks.blockRemove += SetBlockCount;
+        PlaceBlocks.blockSet -= SetBlockCount;
+        SceneManager.sceneLoaded -= LevelLoaded;
     }
 
-    private void OnLevelWasLoaded(int level)
+    private void LevelLoaded(Scene scene, LoadSceneMode sceneMode)
     {
         maxPlayerBlockAmount.text = PlaceBlocks.blockLimit.ToString();
     }
 
     void Start ()
     {
+        defBlockColours = new Color[blockImages.Length];
+        for(int i = 0; i < blockImages.Length; i++)
+        {
+            defBlockColours[i] = blockImages[i].color;
+        }
         currentlySelected = 0;
         playerBlockAmount = 0;
         blockImages[0].color = Color.red;
@@ -51,7 +58,7 @@ public class UIScripts : MonoBehaviour
 
     void SetBlockCount(int amount)
     {
-        playerBlockAmount += amount;
+        playerBlockAmount = amount;
         currPlayerBlockAmount.text = playerBlockAmount.ToString();
     }
 
@@ -71,7 +78,7 @@ public class UIScripts : MonoBehaviour
 
     void selectImage(int blockNum)
     {
-        blockImages[currentlySelected].color = Color.white;
+        blockImages[currentlySelected].color = defBlockColours[currentlySelected];
         currentlySelected = blockNum;
         blockImages[currentlySelected].color = Color.red;
     }
@@ -90,13 +97,13 @@ public class UIScripts : MonoBehaviour
 
     public void ReturnToMain()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void Save()
     {
         GameManager.gameManager.SetDataString();
-        GameManager.gameManager.Save(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToString(), GameManager.gameManager.GetDataString());
+        GameManager.gameManager.Save(SceneManager.GetActiveScene().name.ToString(), GameManager.gameManager.GetDataString(), playerBlockAmount + 1);
         
     }
 }

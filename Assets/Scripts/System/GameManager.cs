@@ -1,25 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
-    [SerializeField]
-    public GameObject[] prefabs;
-
     public static GameManager gameManager;
+    public GameObject playerPrefab;
     public int blocksUsed;
-    public Transform[] blockTransforms;
-<<<<<<< HEAD
 
     private string[] seperateObjs = { "|" };
     private string[] seperateData = { ";" };
-=======
-    private string[] seperatingChars = {";", "|"};
     private string dataString;
->>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0
 
 	void Awake ()
     {
@@ -39,17 +31,13 @@ public class GameManager : MonoBehaviour {
         FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
 
         List<SaveData> objs = new List<SaveData>();
-
-<<<<<<< HEAD
         string[] objects = new string[objectAmount];
 
         //Seperate the data string into strings marking each object
         objects = objectData.Split(seperateObjs, System.StringSplitOptions.RemoveEmptyEntries);
 
         string objectDataString = "";
-=======
-        string[] objects = new string[BlockManager.blockManager.GetList().Count + 1];
->>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0
+        objects = new string[BlockManager.blockManager.GetList().Count + 1];
 
         //Re-combine the string into a continuous string of data seperated with ';' characters
         foreach (string str in objects)
@@ -64,10 +52,9 @@ public class GameManager : MonoBehaviour {
         for (int i = 0; i < objectAmount * 8; i++)
         {
             SaveData data = new SaveData();
-<<<<<<< HEAD
             if (i % 8 == 0 || i == 0)
             {
-                data.objectIndex = System.Convert.ToInt32(objects[i]);
+                data.objectName = objects[i];
             }
             else if (i == 1 || i % 9 == 0)
             {
@@ -88,21 +75,8 @@ public class GameManager : MonoBehaviour {
                 );
                 i += 4;
             }
-=======
-            data.objectName = objects[0];
-            //data.position = objects[1];
-            //data.rotation = objects[2];
->>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0
             objs.Add(data);
         }
-        //{
-        //    str.Split(seperateData, System.StringSplitOptions.RemoveEmptyEntries);
-        //    SaveData data = new SaveData();
-        //    data.objectIndex = System.Convert.ToInt32(objects[0]);
-        //    data.position = objects[1];
-        //    data.rotation = objects[2];
-        //    objs.Add(data);
-        //}
         bf.Serialize(file, objs);
         file.Close();
     }
@@ -116,11 +90,8 @@ public class GameManager : MonoBehaviour {
             List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
             foreach(SaveData sd in data)
             {
-<<<<<<< HEAD
-                Instantiate(prefabs[sd.objectIndex], sd.position, sd.rotation);
-=======
-                Instantiate(Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), sd.position, sd.rotation);
->>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0
+                GameObject loadedObj = Instantiate(Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), sd.position, sd.rotation) as GameObject;
+                BlockManager.blockManager.AddBlock(loadedObj);
             }
             file.Close();
         }
@@ -141,10 +112,20 @@ public class GameManager : MonoBehaviour {
             dataString += go.transform.rotation.y + ";";
             dataString += go.transform.rotation.z + ";";
             dataString += go.transform.rotation.w + ";";
+        }
 
-            dataString += go.transform.localScale.x + ";";
-            dataString += go.transform.localScale.y + ";";
-            dataString += go.transform.localScale.z + ";";
+        if (playerPrefab != null)
+        {
+            dataString += playerPrefab.name + ";";
+
+            dataString += playerPrefab.transform.position.x + ";";
+            dataString += playerPrefab.transform.position.y + ";";
+            dataString += playerPrefab.transform.position.z + ";";
+
+            dataString += playerPrefab.transform.rotation.x + ";";
+            dataString += playerPrefab.transform.rotation.y + ";";
+            dataString += playerPrefab.transform.rotation.z + ";";
+            dataString += playerPrefab.transform.rotation.w + ";";
         }
     }
 
@@ -157,11 +138,7 @@ public class GameManager : MonoBehaviour {
 [System.Serializable]
 class SaveData
 {
-    public int objectIndex;
     public Vector3 position;
     public Quaternion rotation;
-<<<<<<< HEAD
-=======
     public string objectName;
->>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0
 }
