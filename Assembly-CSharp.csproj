@@ -46,13 +46,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\CameraController.cs" />
-     <Compile Include="Assets\Scripts\LevelEnd.cs" />
+     <Compile Include="Assets\Scripts\Camera\CameraController.cs" />
      <Compile Include="Assets\Scripts\Movement.cs" />
-     <Compile Include="Assets\Scripts\PlaceBlocks.cs" />
-     <Compile Include="Assets\Scripts\PlayerController.cs" />
-     <Compile Include="Assets\Scripts\SpawnPlayer.cs" />
-     <Compile Include="Assets\Scripts\UIScripts.cs" />
+     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+     <Compile Include="Assets\Scripts\Player\SpawnPlayer.cs" />
+     <Compile Include="Assets\Scripts\System\BlockManager.cs" />
+     <Compile Include="Assets\Scripts\System\ExitGame.cs" />
+     <Compile Include="Assets\Scripts\System\GameManager.cs" />
+     <Compile Include="Assets\Scripts\System\LevelEnd.cs" />
+     <Compile Include="Assets\Scripts\System\PlaceBlocks.cs" />
+     <Compile Include="Assets\Scripts\System\StartGame.cs" />
+     <Compile Include="Assets\Scripts\System\UIScripts.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

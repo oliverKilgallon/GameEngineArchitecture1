@@ -13,6 +13,7 @@ public class UIScripts : MonoBehaviour
     public Text maxPlayerBlockAmount;
     public PlayerController player;
     public GameObject blockPanel;
+    public GameObject pausePanel;
 
     private int currentlySelected;
     private int playerBlockAmount;
@@ -20,6 +21,7 @@ public class UIScripts : MonoBehaviour
     public void Awake()
     {
         PlayerController.modeSwitch += isEditorOn;
+        PlayerController.escapePressed += TogglePauseMenu;
         PlaceBlocks.blockSwitch += selectImage;
         PlaceBlocks.blockAdd += SetBlockCount;
         PlaceBlocks.blockRemove += SetBlockCount;
@@ -28,6 +30,7 @@ public class UIScripts : MonoBehaviour
     public void OnDisable()
     {
         PlayerController.modeSwitch -= isEditorOn;
+        PlayerController.escapePressed -= TogglePauseMenu;
         PlaceBlocks.blockSwitch -= selectImage;
         PlaceBlocks.blockAdd -= SetBlockCount;
         PlaceBlocks.blockRemove += SetBlockCount;
@@ -71,5 +74,29 @@ public class UIScripts : MonoBehaviour
         blockImages[currentlySelected].color = Color.white;
         currentlySelected = blockNum;
         blockImages[currentlySelected].color = Color.red;
+    }
+
+    public void TogglePauseMenu()
+    {
+        if (pausePanel.activeSelf)
+        {
+            pausePanel.SetActive(false);
+        }
+        else
+        {
+            pausePanel.SetActive(true);
+        }
+    }
+
+    public void ReturnToMain()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
+    public void Save()
+    {
+        GameManager.gameManager.SetDataString();
+        GameManager.gameManager.Save(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToString(), GameManager.gameManager.GetDataString());
+        
     }
 }

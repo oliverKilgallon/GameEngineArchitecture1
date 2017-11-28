@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Lighting/Level1/ReflectionProbe-0.exr.meta
 guid: 9e641894d83bd3b4da15df854c80df78
 timeCreated: 1511651295
 licenseType: Free
+=======
+guid: dd58a9fb6bc29c84c8dc3cf70fb394e5
+timeCreated: 1511774316
+licenseType: Pro
+>>>>>>> dd549ed5eaa0c28eedebefa491111d76404f26d0:Assets/Scenes/MainMenu/ReflectionProbe-0.exr.meta
 TextureImporter:
   fileIDToRecycleName:
     8900000: generatedCubemap
