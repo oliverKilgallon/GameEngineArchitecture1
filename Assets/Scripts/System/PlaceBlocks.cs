@@ -18,11 +18,17 @@ public class PlaceBlocks : MonoBehaviour
 {
 
     public GameObject[] prefabs;
-    public int blockLimit = 12;
+    public static int blockLimit = 12;
     public GameObject playerBlockManager;
 
     public delegate void BlockChange(int blockNum);
     public static event BlockChange blockSwitch;
+
+    public delegate void BlockAdd(int amount);
+    public static event BlockAdd blockAdd;
+
+    public delegate void BlockRemove(int amount);
+    public static event BlockRemove blockRemove;
 
     private GameObject selectedPrefab;
     private int blocksPlaced;
@@ -39,6 +45,19 @@ public class PlaceBlocks : MonoBehaviour
         if (PlayerController.isInEditor)
         {
             EditorControls();
+        }
+    }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        switch (level)
+        {
+            case 1:
+                blockLimit = 12;
+                break;
+            default:
+                blockLimit = 20;
+                break;
         }
     }
 
@@ -93,6 +112,10 @@ public class PlaceBlocks : MonoBehaviour
                 }
             }
             blocksPlaced++;
+            if (blockAdd != null)
+            {
+                blockAdd(1);
+            }
         }
         else
         {
@@ -106,10 +129,14 @@ public class PlaceBlocks : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && (blocksPlaced - 1) > 0)
+            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && (blocksPlaced - 1) >= 0)
             {
                 Destroy(hit.transform.gameObject);
                 blocksPlaced--;
+                if (blockRemove != null)
+                {
+                    blockRemove(-1);
+                }
             }
         }
     }

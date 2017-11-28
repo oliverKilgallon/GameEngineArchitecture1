@@ -5,30 +5,52 @@ using UnityEngine;
 
 public class UIScripts : MonoBehaviour
 {
-    public Text editorText;
     [SerializeField]
     public Image[] blockImages;
+
+    public Text editorText;
+    public Text currPlayerBlockAmount;
+    public Text maxPlayerBlockAmount;
     public PlayerController player;
     public GameObject blockPanel;
 
     private int currentlySelected;
+    private int playerBlockAmount;
 
     public void Awake()
     {
         PlayerController.modeSwitch += isEditorOn;
         PlaceBlocks.blockSwitch += selectImage;
+        PlaceBlocks.blockAdd += SetBlockCount;
+        PlaceBlocks.blockRemove += SetBlockCount;
     }
 
     public void OnDisable()
     {
         PlayerController.modeSwitch -= isEditorOn;
         PlaceBlocks.blockSwitch -= selectImage;
+        PlaceBlocks.blockAdd -= SetBlockCount;
+        PlaceBlocks.blockRemove += SetBlockCount;
     }
+
+    private void OnLevelWasLoaded(int level)
+    {
+        maxPlayerBlockAmount.text = PlaceBlocks.blockLimit.ToString();
+    }
+
     void Start ()
     {
         currentlySelected = 0;
+        playerBlockAmount = 0;
         blockImages[0].color = Color.red;
-	}
+        maxPlayerBlockAmount.text = PlaceBlocks.blockLimit.ToString();
+    }
+
+    void SetBlockCount(int amount)
+    {
+        playerBlockAmount += amount;
+        currPlayerBlockAmount.text = playerBlockAmount.ToString();
+    }
 
     void isEditorOn()
     {
