@@ -2,6 +2,7 @@
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -25,58 +26,67 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
-    public void Save(string filename, string objectData, int objectAmount)
+    public void Save(string filename)
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
 
         List<SaveData> objs = new List<SaveData>();
-        string[] objects = new string[objectAmount];
 
-        //Seperate the data string into strings marking each object
-        objects = objectData.Split(seperateObjs, System.StringSplitOptions.RemoveEmptyEntries);
-
-        string objectDataString = "";
-        objects = new string[BlockManager.blockManager.GetList().Count + 1];
-
-        //Re-combine the string into a continuous string of data seperated with ';' characters
-        foreach (string str in objects)
-        {
-            objectDataString += str;
-        }
-
-        //Split the data once more so it is iterable
-        objects = new string[objects.Length * 8];
-        objects = objectDataString.Split(seperateData, System.StringSplitOptions.RemoveEmptyEntries);
-
-        for (int i = 0; i < objectAmount * 8; i++)
+        foreach (GameObject go in BlockManager.blockManager.GetList())
         {
             SaveData data = new SaveData();
-            if (i % 8 == 0 || i == 0)
-            {
-                data.objectName = objects[i];
-            }
-            else if (i == 1 || i % 9 == 0)
-            {
-                data.position = new Vector3(
-                    (float)System.Convert.ToDouble(objects[i]), 
-                    (float)System.Convert.ToDouble(objects[i + 1]), 
-                    (float)System.Convert.ToDouble(objects[i + 2])
-                );
-                i += 3;
-            }
-            else if (i % 4 == 0)
-            {
-                data.rotation = new Quaternion(
-                    (float)System.Convert.ToDouble(objects[i]), 
-                    (float)System.Convert.ToDouble(objects[i + 1]), 
-                    (float)System.Convert.ToDouble(objects[i + 2]), 
-                    (float)System.Convert.ToDouble(objects[i + 3])
-                );
-                i += 4;
-            }
-            objs.Add(data);
+            data.objectName = go.name();
+            data.position = go.transform.position;
+            data.rotation = go.transform.rotation;
         }
+
+        //string[] objects = new string[objectAmount];
+
+        ////Seperate the data string into strings marking each object
+        //objects = objectData.Split(seperateObjs, System.StringSplitOptions.RemoveEmptyEntries);
+
+        //string objectDataString = "";
+        //objects = new string[BlockManager.blockManager.GetList().Count + 1];
+
+        ////Re-combine the string into a continuous string of data seperated with ';' characters
+        //foreach (string str in objects)
+        //{
+        //    objectDataString += str;
+        //}
+
+        ////Split the data once more so it is iterable
+        //objects = new string[objects.Length * 8];
+        //objects = objectDataString.Split(seperateData, System.StringSplitOptions.RemoveEmptyEntries);
+
+        //for (int i = 0; i < objectAmount * 8; i++)
+        //{
+        //    SaveData data = new SaveData();
+        //    if (i % 8 == 0 || i == 0)
+        //    {
+        //        data.objectName = objects[i];
+        //    }
+        //    else if (i == 1 || i % 9 == 0)
+        //    {
+        //        data.position = new Vector3(
+        //            (float)System.Convert.ToDouble(objects[i]), 
+        //            (float)System.Convert.ToDouble(objects[i + 1]), 
+        //            (float)System.Convert.ToDouble(objects[i + 2])
+        //        );
+        //        i += 3;
+        //    }
+        //    else if (i % 4 == 0)
+        //    {
+        //        data.rotation = new Quaternion(
+        //            (float)System.Convert.ToDouble(objects[i]), 
+        //            (float)System.Convert.ToDouble(objects[i + 1]), 
+        //            (float)System.Convert.ToDouble(objects[i + 2]), 
+        //            (float)System.Convert.ToDouble(objects[i + 3])
+        //        );
+        //        i += 4;
+        //    }
+        //    objs.Add(data);
+        //}
         bf.Serialize(file, objs);
         file.Close();
     }
@@ -88,11 +98,13 @@ public class GameManager : MonoBehaviour {
             BinaryFormatter bf = new BinaryFormatter();
             FileStream file = File.Open(Application.persistentDataPath + "/" + filename + ".dat", FileMode.Open);
             List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
-            foreach(SaveData sd in data)
+            SceneManager.loadScene(filename);
+            for (int i = 0; i < data.Count - 2; i++)
             {
-                GameObject loadedObj = Instantiate(Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), sd.position, sd.rotation) as GameObject;
+                GameObject loadedObj = Instantiate(Resources.Load("Prefabs/Placeables/" + data[i].objectName, typeof(GameObject)), data[i].position, data[i].rotation) as GameObject;
                 BlockManager.blockManager.AddBlock(loadedObj);
             }
+            GameObject player = Instantiate(Resources.Load("Prefabs/Player/" + data[data.Count - 1].objectName, typeof(GameObject)), data[data.Count - 1].position, data[data.Count - 1].rotation) as GameObject;
             file.Close();
         }
     }

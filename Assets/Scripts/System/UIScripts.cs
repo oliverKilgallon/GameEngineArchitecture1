@@ -102,8 +102,8 @@ public class UIScripts : MonoBehaviour
 
     public void Save()
     {
-        GameManager.gameManager.SetDataString();
-        GameManager.gameManager.Save(SceneManager.GetActiveScene().name.ToString(), GameManager.gameManager.GetDataString(), playerBlockAmount + 1);
+        //GameManager.gameManager.SetDataString();
+        GameManager.gameManager.Save(SceneManager.GetActiveScene().name.ToString());
         
     }
 }
