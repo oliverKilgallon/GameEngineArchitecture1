@@ -7,10 +7,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
     public static GameManager gameManager;
+
+    public delegate void LevelLoaded(int playerBlocks);
+    public static event LevelLoaded levelLoaded;
+
     public int blocksUsed;
-    public Transform[] blockTransforms;
-    private string[] seperatingChars = {";", "|"};
-    private string dataString;
 
 	void Awake ()
     {
@@ -24,77 +25,93 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
-    public void Save(string filename, string objectData)
+    public void Save(string filename)
     {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
+        
 
         List<SaveData> objs = new List<SaveData>();
 
-        string[] objects = new string[BlockManager.blockManager.GetList().Count + 1];
+        List<GameObject> objects = BlockManager.blockManager.GetList();
 
-        objects = objectData.Split(seperatingChars, System.StringSplitOptions.RemoveEmptyEntries);
-
-        foreach(string str in objects)
+        if (objects == null)
         {
-            str.Split();
-            SaveData data = new SaveData();
-            data.objectName = objects[0];
-            //data.position = objects[1];
-            //data.rotation = objects[2];
-            objs.Add(data);
+            Debug.Log("No data to save!");
         }
-        bf.Serialize(file, objs);
-        file.Close();
+        else
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
+
+            foreach (GameObject obj in objects)
+            {
+                SaveData data = new SaveData();
+                data.objectName = obj.name;
+                data.positionX = obj.transform.position.x;
+                data.positionY = obj.transform.position.y;
+                data.positionZ = obj.transform.position.z;
+
+                data.rotationX = obj.transform.rotation.x;
+                data.rotationY = obj.transform.rotation.y;
+                data.rotationZ = obj.transform.rotation.z;
+                data.rotationW = obj.transform.rotation.w;
+                objs.Add(data);
+            }
+            bf.Serialize(file, objs);
+            file.Close();
+        }
+
+        
     }
 
     public void Load(string filename)
     {
+        Debug.Log("Loading file at: " + Application.persistentDataPath + "/" + filename + ".dat");
         if (File.Exists(Application.persistentDataPath + "/" + filename + ".dat"))
         {
             BinaryFormatter bf = new BinaryFormatter();
+
             FileStream file = File.Open(Application.persistentDataPath + "/" + filename + ".dat", FileMode.Open);
+
             List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
-            foreach(SaveData sd in data)
+
+            foreach (GameObject obj in BlockManager.blockManager.GetList())
             {
-                Instantiate(Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), sd.position, sd.rotation);
+                Destroy(obj);
+            }
+
+            BlockManager.blockManager.GetList().Clear();
+
+            foreach (SaveData sd in data)
+            {
+                GameObject obj = Instantiate(
+                    Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), 
+                    new Vector3(sd.positionX, sd.positionY, sd.positionZ), 
+                    new Quaternion(sd.rotationX, sd.rotationY, sd.rotationZ, sd.rotationW)
+                ) as GameObject;
+                BlockManager.blockManager.GetList().Add(obj);
             }
             file.Close();
         }
-    }
-
-    public void SetDataString()
-    {
-        List<GameObject> objList = BlockManager.blockManager.GetList();
-        foreach (GameObject go in objList)
+        
+        if (levelLoaded != null)
         {
-            dataString += go.name + ";";
-
-            dataString += go.transform.position.x + ";";
-            dataString += go.transform.position.y + ";";
-            dataString += go.transform.position.z + ";";
-
-            dataString += go.transform.rotation.x + ";";
-            dataString += go.transform.rotation.y + ";";
-            dataString += go.transform.rotation.z + ";";
-            dataString += go.transform.rotation.w + ";";
-
-            dataString += go.transform.localScale.x + ";";
-            dataString += go.transform.localScale.y + ";";
-            dataString += go.transform.localScale.z + ";";
+            blocksUsed = BlockManager.blockManager.GetList().Count;
+            levelLoaded(blocksUsed);
         }
-    }
-
-    public string GetDataString()
-    {
-        return dataString;
     }
 }
 
 [System.Serializable]
 class SaveData
 {
-    public Vector3 position;
-    public Quaternion rotation;
+    public float positionX;
+    public float positionY;
+    public float positionZ;
+
+    public float rotationX;
+    public float rotationY;
+    public float rotationZ;
+    public float rotationW;
+
     public string objectName;
 }

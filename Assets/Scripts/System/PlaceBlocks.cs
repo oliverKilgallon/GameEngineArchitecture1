@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 enum MCFacehit
 {
@@ -24,14 +26,49 @@ public class PlaceBlocks : MonoBehaviour
     public delegate void BlockChange(int blockNum);
     public static event BlockChange blockSwitch;
 
+    public delegate void BlockEdit(int blockLimit);
+    public static event BlockEdit blockEdit;
+
     private GameObject selectedPrefab;
     private int blocksPlaced;
+
     void Start ()
     {
         selectedPrefab = prefabs[0];
         blocksPlaced = 0;
 	}
-	
+
+    void Awake()
+    {
+        SceneManager.sceneLoaded += SetBlockLimit;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= SetBlockLimit;
+    }
+
+    void SetBlockLimit(Scene scene, LoadSceneMode scenemode)
+    {
+        int levelLimit = 0;
+        switch (scene.buildIndex)
+        {
+            case 1:
+                levelLimit = 12;
+                break;
+            default:
+                levelLimit = 20;
+                break;
+        }
+        if (BlockManager.blockManager.GetList() != null)
+        {
+            blockLimit = levelLimit - BlockManager.blockManager.GetList().Count;
+        }
+        else
+        {
+            blockLimit = levelLimit;
+        }
+    }
 	void Update ()
     {
         if (PlayerController.isInEditor)
@@ -75,10 +112,9 @@ public class PlaceBlocks : MonoBehaviour
             }
         }
     }
-
     void AddBlock()
     {
-        if (blocksPlaced < blockLimit)
+        if (blocksPlaced < blockLimit && !EventSystem.current.IsPointerOverGameObject())
         {
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -90,10 +126,13 @@ public class PlaceBlocks : MonoBehaviour
                     newObj.name = selectedPrefab.name;
                     BlockManager.blockManager.AddBlock(newObj);
                     newObj.transform.parent = playerBlockManager.transform;
+                    blocksPlaced++;
                 }
             }
-            Debug.Log(BlockManager.blockManager.GetListItems());
-            blocksPlaced++;
+            if (blockEdit != null)
+            {
+                blockEdit(blocksPlaced);
+            }
         }
         else
         {
@@ -107,11 +146,15 @@ public class PlaceBlocks : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && (blocksPlaced - 1) >= 0)
+            if (!hit.transform.gameObject.CompareTag("Undeletable") && !hit.transform.CompareTag("Node") && ((blocksPlaced - 1) >= 0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 BlockManager.blockManager.RemoveBlock(hit.transform.gameObject.GetInstanceID());
                 Destroy(hit.transform.gameObject);
                 blocksPlaced--;
+            }
+            if (blockEdit != null)
+            {
+                blockEdit(blocksPlaced);
             }
         }
     }

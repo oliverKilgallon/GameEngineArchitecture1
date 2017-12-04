@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIScripts : MonoBehaviour
 {
     public Text editorText;
+    public Text blocksPlacedText;
+    public Text blockLimitText;
+
     [SerializeField]
     public Image[] blockImages;
+
     public PlayerController player;
+
     public GameObject blockPanel;
     public GameObject pausePanel;
 
@@ -18,14 +24,26 @@ public class UIScripts : MonoBehaviour
     {
         PlayerController.modeSwitch += isEditorOn;
         PlayerController.escapePressed += TogglePauseMenu;
+
         PlaceBlocks.blockSwitch += selectImage;
+        PlaceBlocks.blockEdit += UpdatePlacedBlocks;
+
+        SceneManager.sceneLoaded += UpdateBlockLimit;
+
+        GameManager.levelLoaded += UpdatePlacedBlocks;
     }
 
     public void OnDisable()
     {
         PlayerController.modeSwitch -= isEditorOn;
         PlayerController.escapePressed -= TogglePauseMenu;
+
         PlaceBlocks.blockSwitch -= selectImage;
+        PlaceBlocks.blockEdit -= UpdatePlacedBlocks;
+
+        SceneManager.sceneLoaded -= UpdateBlockLimit;
+
+        GameManager.levelLoaded -= UpdatePlacedBlocks;
     }
     void Start ()
     {
@@ -47,6 +65,23 @@ public class UIScripts : MonoBehaviour
         }
     }
 
+    void UpdateBlockLimit(Scene scene, LoadSceneMode sceneMode)
+    {
+        switch (scene.buildIndex)
+        {
+            case 1:
+                blockLimitText.text = 12.ToString();
+                break;
+            default:
+                blockLimitText.text = 20.ToString();
+                break;
+        }
+    }
+    void UpdatePlacedBlocks(int newLimit)
+    {
+        blocksPlacedText.text = newLimit.ToString();
+    }
+
     void selectImage(int blockNum)
     {
         blockImages[currentlySelected].color = Color.white;
@@ -59,6 +94,7 @@ public class UIScripts : MonoBehaviour
         if (pausePanel.activeSelf)
         {
             pausePanel.SetActive(false);
+            
         }
         else
         {
@@ -68,13 +104,17 @@ public class UIScripts : MonoBehaviour
 
     public void ReturnToMain()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void Save()
     {
-        GameManager.gameManager.SetDataString();
-        GameManager.gameManager.Save(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.ToString(), GameManager.gameManager.GetDataString());
+        GameManager.gameManager.Save(SceneManager.GetActiveScene().name.ToString());
         
+    }
+
+    public void Load()
+    {
+        GameManager.gameManager.Load(SceneManager.GetActiveScene().name.ToString());
     }
 }

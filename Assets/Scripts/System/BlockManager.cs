@@ -32,7 +32,7 @@ public class BlockManager : MonoBehaviour {
 
     public void RemoveBlock(int blockID)
     {
-        for (int i = 0; i < playerCreatedBlocks.Count - 1; i++)
+        for (int i = 0; i < playerCreatedBlocks.Count; i++)
         {
             if (playerCreatedBlocks[i].GetInstanceID() == blockID) playerCreatedBlocks.Remove(playerCreatedBlocks[i]);
         }
