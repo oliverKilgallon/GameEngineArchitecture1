@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     public static event LevelLoaded levelLoaded;
 
     public int blocksUsed;
+    private bool overwriteSave = false;
 
 	void Awake ()
     {
@@ -98,6 +99,11 @@ public class GameManager : MonoBehaviour {
             blocksUsed = BlockManager.blockManager.GetList().Count;
             levelLoaded(blocksUsed);
         }
+    }
+
+    public void SetOverwriteSave(bool overwriteSave)
+    {
+        this.overwriteSave = overwriteSave;
     }
 }
 
