@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+<<<<<<< HEAD
 using UnityEngine.EventSystems;
+=======
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
 
 enum MCFacehit
 {
@@ -20,18 +23,35 @@ public class PlaceBlocks : MonoBehaviour
 {
 
     public GameObject[] prefabs;
-    public int blockLimit = 12;
-    public GameObject playerBlockManager;
+    public static int blockLimit = 12;
 
     public delegate void BlockChange(int blockNum);
     public static event BlockChange blockSwitch;
 
+<<<<<<< HEAD
     public delegate void BlockEdit(int blockLimit);
     public static event BlockEdit blockEdit;
+=======
+    public delegate void BlockSet(int amount);
+    public static event BlockSet blockSet;
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
 
     private GameObject selectedPrefab;
     private int blocksPlaced;
 
+<<<<<<< HEAD
+=======
+    private void Awake()
+    {
+        SceneManager.sceneLoaded += LevelLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= LevelLoaded;
+    }
+
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
     void Start ()
     {
         selectedPrefab = prefabs[0];
@@ -74,6 +94,19 @@ public class PlaceBlocks : MonoBehaviour
         if (PlayerController.isInEditor)
         {
             EditorControls();
+        }
+    }
+
+    private void LevelLoaded(Scene scene, LoadSceneMode sceneMode)
+    {
+
+        if (scene.name == "Level1")
+        {
+            blockLimit = 12;
+        }
+        else
+        {
+            blockLimit = 20;
         }
     }
 
@@ -125,6 +158,7 @@ public class PlaceBlocks : MonoBehaviour
                     GameObject newObj = Instantiate(selectedPrefab, hit.transform.position + hit.normal, Quaternion.identity);
                     newObj.name = selectedPrefab.name;
                     BlockManager.blockManager.AddBlock(newObj);
+<<<<<<< HEAD
                     newObj.transform.parent = playerBlockManager.transform;
                     blocksPlaced++;
                 }
@@ -132,6 +166,15 @@ public class PlaceBlocks : MonoBehaviour
             if (blockEdit != null)
             {
                 blockEdit(blocksPlaced);
+=======
+                    blocksPlaced++;
+                }
+            }
+            
+            if (blockSet != null)
+            {
+                blockSet(blocksPlaced);
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
             }
         }
         else
@@ -151,6 +194,10 @@ public class PlaceBlocks : MonoBehaviour
                 BlockManager.blockManager.RemoveBlock(hit.transform.gameObject.GetInstanceID());
                 Destroy(hit.transform.gameObject);
                 blocksPlaced--;
+                if (blockSet != null)
+                {
+                    blockSet(blocksPlaced);
+                }
             }
             if (blockEdit != null)
             {

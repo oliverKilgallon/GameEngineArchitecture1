@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class UIScripts : MonoBehaviour
 {
+<<<<<<< HEAD
     public Text editorText;
     public Text blocksPlacedText;
     public Text blockLimitText;
@@ -13,12 +14,22 @@ public class UIScripts : MonoBehaviour
     [SerializeField]
     public Image[] blockImages;
 
+=======
+    [SerializeField]
+    public Image[] blockImages;
+
+    public Text editorText;
+    public Text currPlayerBlockAmount;
+    public Text maxPlayerBlockAmount;
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
     public PlayerController player;
 
     public GameObject blockPanel;
     public GameObject pausePanel;
 
     private int currentlySelected;
+    private int playerBlockAmount;
+    private Color[] defBlockColours;
 
     public void Awake()
     {
@@ -26,11 +37,16 @@ public class UIScripts : MonoBehaviour
         PlayerController.escapePressed += TogglePauseMenu;
 
         PlaceBlocks.blockSwitch += selectImage;
+<<<<<<< HEAD
         PlaceBlocks.blockEdit += UpdatePlacedBlocks;
 
         SceneManager.sceneLoaded += UpdateBlockLimit;
 
         GameManager.levelLoaded += UpdatePlacedBlocks;
+=======
+        PlaceBlocks.blockSet += SetBlockCount;
+        SceneManager.sceneLoaded += LevelLoaded;
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
     }
 
     public void OnDisable()
@@ -39,17 +55,41 @@ public class UIScripts : MonoBehaviour
         PlayerController.escapePressed -= TogglePauseMenu;
 
         PlaceBlocks.blockSwitch -= selectImage;
+<<<<<<< HEAD
         PlaceBlocks.blockEdit -= UpdatePlacedBlocks;
 
         SceneManager.sceneLoaded -= UpdateBlockLimit;
 
         GameManager.levelLoaded -= UpdatePlacedBlocks;
+=======
+        PlaceBlocks.blockSet -= SetBlockCount;
+        SceneManager.sceneLoaded -= LevelLoaded;
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
     }
+
+    private void LevelLoaded(Scene scene, LoadSceneMode sceneMode)
+    {
+        maxPlayerBlockAmount.text = PlaceBlocks.blockLimit.ToString();
+    }
+
     void Start ()
     {
+        defBlockColours = new Color[blockImages.Length];
+        for(int i = 0; i < blockImages.Length; i++)
+        {
+            defBlockColours[i] = blockImages[i].color;
+        }
         currentlySelected = 0;
+        playerBlockAmount = 0;
         blockImages[0].color = Color.red;
-	}
+        maxPlayerBlockAmount.text = PlaceBlocks.blockLimit.ToString();
+    }
+
+    void SetBlockCount(int amount)
+    {
+        playerBlockAmount = amount;
+        currPlayerBlockAmount.text = playerBlockAmount.ToString();
+    }
 
     void isEditorOn()
     {
@@ -84,7 +124,7 @@ public class UIScripts : MonoBehaviour
 
     void selectImage(int blockNum)
     {
-        blockImages[currentlySelected].color = Color.white;
+        blockImages[currentlySelected].color = defBlockColours[currentlySelected];
         currentlySelected = blockNum;
         blockImages[currentlySelected].color = Color.red;
     }
@@ -109,6 +149,10 @@ public class UIScripts : MonoBehaviour
 
     public void Save()
     {
+<<<<<<< HEAD
+=======
+        //GameManager.gameManager.SetDataString();
+>>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
         GameManager.gameManager.Save(SceneManager.GetActiveScene().name.ToString());
         
     }
