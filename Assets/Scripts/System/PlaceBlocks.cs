@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-<<<<<<< HEAD
 using UnityEngine.EventSystems;
-=======
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
 
 enum MCFacehit
 {
@@ -27,31 +24,16 @@ public class PlaceBlocks : MonoBehaviour
 
     public delegate void BlockChange(int blockNum);
     public static event BlockChange blockSwitch;
-
-<<<<<<< HEAD
+    
     public delegate void BlockEdit(int blockLimit);
     public static event BlockEdit blockEdit;
-=======
-    public delegate void BlockSet(int amount);
-    public static event BlockSet blockSet;
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
+
+    //public delegate void BlockSet(int amount);
+    //public static event BlockSet blockSet;
 
     private GameObject selectedPrefab;
-    private int blocksPlaced;
-
-<<<<<<< HEAD
-=======
-    private void Awake()
-    {
-        SceneManager.sceneLoaded += LevelLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= LevelLoaded;
-    }
-
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
+    public static int blocksPlaced;
+    
     void Start ()
     {
         selectedPrefab = prefabs[0];
@@ -71,6 +53,8 @@ public class PlaceBlocks : MonoBehaviour
     void SetBlockLimit(Scene scene, LoadSceneMode scenemode)
     {
         int levelLimit = 0;
+
+        //Set the amount of blocks the player can use based on the level
         switch (scene.buildIndex)
         {
             case 1:
@@ -80,33 +64,27 @@ public class PlaceBlocks : MonoBehaviour
                 levelLimit = 20;
                 break;
         }
+
+        //Sets the blocklimit to a previous count based on the blockmanager's count. If there is none, the default level limit is used.
         if (BlockManager.blockManager.GetList() != null)
         {
-            blockLimit = levelLimit - BlockManager.blockManager.GetList().Count;
+            blocksPlaced = BlockManager.blockManager.GetList().Count + 1;
         }
-        else
-        {
-            blockLimit = levelLimit;
-        }
+
+        //foreach (GameObject obj in BlockManager.blockManager.GetList())
+        //{
+        //    Debug.Log(obj.name);
+        //}
+        Debug.Log("Blocks placed is: " + blocksPlaced);
+        blockLimit = levelLimit;
     }
+
 	void Update ()
     {
+        //Only allow the editor to be used if the player has enabled them
         if (PlayerController.isInEditor)
         {
             EditorControls();
-        }
-    }
-
-    private void LevelLoaded(Scene scene, LoadSceneMode sceneMode)
-    {
-
-        if (scene.name == "Level1")
-        {
-            blockLimit = 12;
-        }
-        else
-        {
-            blockLimit = 20;
         }
     }
 
@@ -158,23 +136,12 @@ public class PlaceBlocks : MonoBehaviour
                     GameObject newObj = Instantiate(selectedPrefab, hit.transform.position + hit.normal, Quaternion.identity);
                     newObj.name = selectedPrefab.name;
                     BlockManager.blockManager.AddBlock(newObj);
-<<<<<<< HEAD
-                    newObj.transform.parent = playerBlockManager.transform;
                     blocksPlaced++;
                 }
             }
             if (blockEdit != null)
             {
                 blockEdit(blocksPlaced);
-=======
-                    blocksPlaced++;
-                }
-            }
-            
-            if (blockSet != null)
-            {
-                blockSet(blocksPlaced);
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
             }
         }
         else
@@ -194,15 +161,12 @@ public class PlaceBlocks : MonoBehaviour
                 BlockManager.blockManager.RemoveBlock(hit.transform.gameObject.GetInstanceID());
                 Destroy(hit.transform.gameObject);
                 blocksPlaced--;
-                if (blockSet != null)
+                if (blockEdit != null)
                 {
-                    blockSet(blocksPlaced);
+                    blockEdit(blocksPlaced);
                 }
             }
-            if (blockEdit != null)
-            {
-                blockEdit(blocksPlaced);
-            }
+            
         }
     }
 }

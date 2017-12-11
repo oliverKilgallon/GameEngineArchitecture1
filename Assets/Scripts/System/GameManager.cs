@@ -7,24 +7,12 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
 
     public static GameManager gameManager;
-<<<<<<< HEAD
 
     public delegate void LevelLoaded(int playerBlocks);
     public static event LevelLoaded levelLoaded;
-
-    public int blocksUsed;
-<<<<<<< HEAD
-=======
+    
     public GameObject playerPrefab;
     public int blocksUsed;
-
-    private string[] seperateObjs = { "|" };
-    private string[] seperateData = { ";" };
-    private string dataString;
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
-=======
-    private bool overwriteSave = false;
->>>>>>> 0954e3ba608dd68fcd98f852c30916b91a530a22
 
 	void Awake ()
     {
@@ -40,11 +28,12 @@ public class GameManager : MonoBehaviour {
 
     public void Save(string filename)
     {
-        
+
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
 
         List<SaveData> objs = new List<SaveData>();
-
-<<<<<<< HEAD
+        
         List<GameObject> objects = BlockManager.blockManager.GetList();
 
         if (objects == null)
@@ -53,86 +42,36 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Create(Application.persistentDataPath + "/" + filename + ".dat");
-
-            foreach (GameObject obj in objects)
+            foreach (GameObject go in objects)
             {
                 SaveData data = new SaveData();
-                data.objectName = obj.name;
-                data.positionX = obj.transform.position.x;
-                data.positionY = obj.transform.position.y;
-                data.positionZ = obj.transform.position.z;
-
-                data.rotationX = obj.transform.rotation.x;
-                data.rotationY = obj.transform.rotation.y;
-                data.rotationZ = obj.transform.rotation.z;
-                data.rotationW = obj.transform.rotation.w;
+                data.objectName = go.name;
+                data.positionX = go.transform.position.x;
+                data.positionY = go.transform.position.y;
+                data.positionZ = go.transform.position.z;
+                                 
+                data.rotationX = go.transform.rotation.x;
+                data.rotationY = go.transform.rotation.y;
+                data.rotationZ = go.transform.rotation.z;
+                data.rotationW = go.transform.rotation.w;
                 objs.Add(data);
             }
-            bf.Serialize(file, objs);
-            file.Close();
+
+            SaveData playerData = new SaveData();
+            playerData.objectName = playerPrefab.name;
+            playerData.positionX = playerPrefab.transform.position.x;
+            playerData.positionY = playerPrefab.transform.position.y;
+            playerData.positionZ = playerPrefab.transform.position.z;
+
+            playerData.rotationX = playerPrefab.transform.rotation.x;
+            playerData.rotationY = playerPrefab.transform.rotation.y;
+            playerData.rotationZ = playerPrefab.transform.rotation.z;
+            playerData.rotationW = playerPrefab.transform.rotation.w;
+            objs.Add(playerData);
         }
 
-        
-=======
-        foreach (GameObject go in BlockManager.blockManager.GetList())
-        {
-            SaveData data = new SaveData();
-            data.objectName = go.name();
-            data.position = go.transform.position;
-            data.rotation = go.transform.rotation;
-        }
-
-        //string[] objects = new string[objectAmount];
-
-        ////Seperate the data string into strings marking each object
-        //objects = objectData.Split(seperateObjs, System.StringSplitOptions.RemoveEmptyEntries);
-
-        //string objectDataString = "";
-        //objects = new string[BlockManager.blockManager.GetList().Count + 1];
-
-        ////Re-combine the string into a continuous string of data seperated with ';' characters
-        //foreach (string str in objects)
-        //{
-        //    objectDataString += str;
-        //}
-
-        ////Split the data once more so it is iterable
-        //objects = new string[objects.Length * 8];
-        //objects = objectDataString.Split(seperateData, System.StringSplitOptions.RemoveEmptyEntries);
-
-        //for (int i = 0; i < objectAmount * 8; i++)
-        //{
-        //    SaveData data = new SaveData();
-        //    if (i % 8 == 0 || i == 0)
-        //    {
-        //        data.objectName = objects[i];
-        //    }
-        //    else if (i == 1 || i % 9 == 0)
-        //    {
-        //        data.position = new Vector3(
-        //            (float)System.Convert.ToDouble(objects[i]), 
-        //            (float)System.Convert.ToDouble(objects[i + 1]), 
-        //            (float)System.Convert.ToDouble(objects[i + 2])
-        //        );
-        //        i += 3;
-        //    }
-        //    else if (i % 4 == 0)
-        //    {
-        //        data.rotation = new Quaternion(
-        //            (float)System.Convert.ToDouble(objects[i]), 
-        //            (float)System.Convert.ToDouble(objects[i + 1]), 
-        //            (float)System.Convert.ToDouble(objects[i + 2]), 
-        //            (float)System.Convert.ToDouble(objects[i + 3])
-        //        );
-        //        i += 4;
-        //    }
-        //    objs.Add(data);
-        //}
         bf.Serialize(file, objs);
         file.Close();
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
     }
 
     public void Load(string filename)
@@ -144,73 +83,77 @@ public class GameManager : MonoBehaviour {
 
             FileStream file = File.Open(Application.persistentDataPath + "/" + filename + ".dat", FileMode.Open);
 
-            List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
-<<<<<<< HEAD
 
-            foreach (GameObject obj in BlockManager.blockManager.GetList())
+
+            //foreach (SaveData sd in data)
+            //{
+            //    GameObject obj = Instantiate(
+            //        Resources.Load("Prefabs/Placeables/" + sd.objectName, typeof(GameObject)),
+            //        new Vector3(sd.positionX, sd.positionY, sd.positionZ),
+            //        new Quaternion(sd.rotationX, sd.rotationY, sd.rotationZ, sd.rotationW)
+            //    ) as GameObject;
+            //    BlockManager.blockManager.GetList().Add(obj);
+            //}
+
+            if (SceneManager.GetActiveScene().name != "MainMenu")
             {
-                Destroy(obj);
+                List<GameObject> blockList = BlockManager.blockManager.GetList();
+                if (blockList != null)
+                {
+                    //Destroy any duplicates already present
+                    foreach (GameObject obj in BlockManager.blockManager.GetList())
+                    {
+                        Destroy(obj);
+                    }
+                }
+
+                //Clear blocklist to prevent duplication in the list
+                BlockManager.blockManager.GetList().Clear();
+            }
+            else
+            {
+                SceneManager.LoadScene(filename);
             }
 
-            BlockManager.blockManager.GetList().Clear();
+            
 
-            foreach (SaveData sd in data)
-            {
-                GameObject obj = Instantiate(
-                    Resources.Load("Prefabs/Placeables/" + sd.objectName , typeof(GameObject)), 
-                    new Vector3(sd.positionX, sd.positionY, sd.positionZ), 
-                    new Quaternion(sd.rotationX, sd.rotationY, sd.rotationZ, sd.rotationW)
-                ) as GameObject;
-                BlockManager.blockManager.GetList().Add(obj);
-=======
-            SceneManager.loadScene(filename);
+            List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
+
+            //Instantiate all blocks in the blocklist, aside from the player
             for (int i = 0; i < data.Count - 2; i++)
             {
-                GameObject loadedObj = Instantiate(Resources.Load("Prefabs/Placeables/" + data[i].objectName, typeof(GameObject)), data[i].position, data[i].rotation) as GameObject;
-                BlockManager.blockManager.AddBlock(loadedObj);
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
+                GameObject loadedObj = Instantiate(
+                    Resources.Load("Prefabs/Placeables/" + data[i].objectName, typeof(GameObject)),
+                    new Vector3(
+                        data[i].positionX, 
+                        data[i].positionY, 
+                        data[i].positionZ), 
+                    new Quaternion(
+                        data[i].rotationX, 
+                        data[i].rotationY, 
+                        data[i].rotationZ, 
+                        data[i].rotationW
+                        )
+                    ) as GameObject;
+
+                if (BlockManager.blockManager != null) BlockManager.blockManager.AddBlock(loadedObj);
             }
-            GameObject player = Instantiate(Resources.Load("Prefabs/Player/" + data[data.Count - 1].objectName, typeof(GameObject)), data[data.Count - 1].position, data[data.Count - 1].rotation) as GameObject;
+            
+            //Instantiate the player
+            GameObject player = Instantiate(
+                Resources.Load("Prefabs/Player/" + data[data.Count - 1].objectName, typeof(GameObject)), 
+                new Vector3(
+                    data[data.Count - 1].positionX, 
+                    data[data.Count - 1].positionY, 
+                    data[data.Count - 1].positionZ), 
+                new Quaternion(
+                    data[data.Count - 1].rotationX, 
+                    data[data.Count - 1].rotationY, 
+                    data[data.Count - 1].rotationZ, 
+                    data[data.Count - 1].rotationW)
+                ) as GameObject;
             file.Close();
         }
-        
-        if (levelLoaded != null)
-        {
-<<<<<<< HEAD
-            blocksUsed = BlockManager.blockManager.GetList().Count;
-            levelLoaded(blocksUsed);
-=======
-            dataString += go.name + ";";
-
-            dataString += go.transform.position.x + ";";
-            dataString += go.transform.position.y + ";";
-            dataString += go.transform.position.z + ";";
-
-            dataString += go.transform.rotation.x + ";";
-            dataString += go.transform.rotation.y + ";";
-            dataString += go.transform.rotation.z + ";";
-            dataString += go.transform.rotation.w + ";";
-        }
-
-        if (playerPrefab != null)
-        {
-            dataString += playerPrefab.name + ";";
-
-            dataString += playerPrefab.transform.position.x + ";";
-            dataString += playerPrefab.transform.position.y + ";";
-            dataString += playerPrefab.transform.position.z + ";";
-
-            dataString += playerPrefab.transform.rotation.x + ";";
-            dataString += playerPrefab.transform.rotation.y + ";";
-            dataString += playerPrefab.transform.rotation.z + ";";
-            dataString += playerPrefab.transform.rotation.w + ";";
->>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
-        }
-    }
-
-    public void SetOverwriteSave(bool overwriteSave)
-    {
-        this.overwriteSave = overwriteSave;
     }
 }
 

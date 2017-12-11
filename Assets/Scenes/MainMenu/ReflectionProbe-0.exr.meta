@@ -1,7 +1,7 @@
 fileFormatVersion: 2
-guid: 9e641894d83bd3b4da15df854c80df78
-timeCreated: 1511651295
-licenseType: Free
+guid: 0d0972064c2df6f4185727b56fe8efde
+timeCreated: 1512993169
+licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
     8900000: generatedCubemap
@@ -31,7 +31,7 @@ TextureImporter:
     filterMode: 2
     aniso: 0
     mipBias: 0
-    wrapMode: -1
+    wrapMode: 1
   nPOTScale: 1
   lightmap: 0
   compressionQuality: 50
