@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
     public static event LevelLoaded levelLoaded;
 
     public int blocksUsed;
+<<<<<<< HEAD
 =======
     public GameObject playerPrefab;
     public int blocksUsed;
@@ -21,6 +22,9 @@ public class GameManager : MonoBehaviour {
     private string[] seperateData = { ";" };
     private string dataString;
 >>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
+=======
+    private bool overwriteSave = false;
+>>>>>>> 0954e3ba608dd68fcd98f852c30916b91a530a22
 
 	void Awake ()
     {
@@ -202,6 +206,11 @@ public class GameManager : MonoBehaviour {
             dataString += playerPrefab.transform.rotation.w + ";";
 >>>>>>> a2bdaefb215ed6ce4a9bd7e9ce5f9cb73c8690d6
         }
+    }
+
+    public void SetOverwriteSave(bool overwriteSave)
+    {
+        this.overwriteSave = overwriteSave;
     }
 }
 
