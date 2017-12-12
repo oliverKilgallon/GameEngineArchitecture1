@@ -6,6 +6,9 @@ using UnityEngine.SceneManagement;
 
 public class UIScripts : MonoBehaviour
 {
+    public delegate void NewGame();
+    public static event NewGame newGameEvent;
+
     public Text editorText;
     public Text blocksPlacedText;
     public Text blockLimitText;
@@ -63,6 +66,16 @@ public class UIScripts : MonoBehaviour
         if(pausePanel != null) pausePanel.SetActive(false);
     }
 
+    public void StartNewGame()
+    {
+        SceneManager.LoadScene(1);
+        if (newGameEvent != null)
+        {
+            
+            newGameEvent();
+        }
+    }
+
     //Setup the block editor ui
     void Start ()
     {
@@ -84,6 +97,7 @@ public class UIScripts : MonoBehaviour
     public void MainLoadPressed()
     {
         GameManager.gameManager.Load(LoadInputField.text);
+        SceneManager.sceneLoaded += BlockManager.Load;
     }
 
     //Set the saveLoad panel to active if "load" is pressed in the main menu

@@ -75,7 +75,6 @@ public class PlaceBlocks : MonoBehaviour
         //{
         //    Debug.Log(obj.name);
         //}
-        Debug.Log("Blocks placed is: " + blocksPlaced);
         blockLimit = levelLimit;
     }
 

@@ -3,16 +3,20 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-    public static GameManager gameManager;
+    public static GameManager gameManager = null;
 
     public delegate void LevelLoaded(int playerBlocks);
     public static event LevelLoaded levelLoaded;
     
     public GameObject playerPrefab;
     public int blocksUsed;
+
+    private bool isLoaded = false;
+    private bool fromMain = false;
 
 	void Awake ()
     {
@@ -22,9 +26,11 @@ public class GameManager : MonoBehaviour {
             gameManager = this;
         } else if (gameManager != this)
         {
+            Debug.Log("Got here");
             Destroy(gameObject);
         }
 	}
+    
 
     public void Save(string filename)
     {
@@ -76,12 +82,12 @@ public class GameManager : MonoBehaviour {
 
     public void Load(string filename)
     {
-        Debug.Log("Loading file at: " + Application.persistentDataPath + "/" + filename + ".dat");
-        if (File.Exists(Application.persistentDataPath + "/" + filename + ".dat"))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
+        //Debug.Log("Loading file at: " + Application.persistentDataPath + "/" + filename + ".dat");
+        //if (File.Exists(Application.persistentDataPath + "/" + filename + ".dat"))
+        //{
+        //    BinaryFormatter bf = new BinaryFormatter();
 
-            FileStream file = File.Open(Application.persistentDataPath + "/" + filename + ".dat", FileMode.Open);
+        //    FileStream file = File.Open(Application.persistentDataPath + "/" + filename + ".dat", FileMode.Open);
 
 
 
@@ -113,48 +119,67 @@ public class GameManager : MonoBehaviour {
             else
             {
                 SceneManager.LoadScene(filename);
+                //StartCoroutine(LoadYourAsyncScene(filename));
             }
 
-            
+            //List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
 
-            List<SaveData> data = (List<SaveData>)bf.Deserialize(file);
+            //Debug.Log(SceneManager.GetActiveScene().name);
+            ////Instantiate all blocks in the blocklist, aside from the player
+            //for (int i = 0; i < data.Count - 1; i++)
+            //{
+            //    GameObject loadedObj = Instantiate(
+            //        Resources.Load("Prefabs/Placeables/" + data[i].objectName, typeof(GameObject)),
+            //        new Vector3(
+            //            data[i].positionX, 
+            //            data[i].positionY, 
+            //            data[i].positionZ), 
+            //        new Quaternion(
+            //            data[i].rotationX, 
+            //            data[i].rotationY, 
+            //            data[i].rotationZ, 
+            //            data[i].rotationW
+            //            )
+            //        ) as GameObject;
+                
+            //    Debug.Log(loadedObj.activeSelf);
+            //    if (BlockManager.blockManager != null) BlockManager.blockManager.AddBlock(loadedObj);
+            //}
 
-            //Instantiate all blocks in the blocklist, aside from the player
-            for (int i = 0; i < data.Count - 2; i++)
-            {
-                GameObject loadedObj = Instantiate(
-                    Resources.Load("Prefabs/Placeables/" + data[i].objectName, typeof(GameObject)),
-                    new Vector3(
-                        data[i].positionX, 
-                        data[i].positionY, 
-                        data[i].positionZ), 
-                    new Quaternion(
-                        data[i].rotationX, 
-                        data[i].rotationY, 
-                        data[i].rotationZ, 
-                        data[i].rotationW
-                        )
-                    ) as GameObject;
+            ////Destroy any duplicate player
+            //Destroy(GameObject.Find("Player"));
 
-                if (BlockManager.blockManager != null) BlockManager.blockManager.AddBlock(loadedObj);
-            }
-            
-            //Instantiate the player
-            GameObject player = Instantiate(
-                Resources.Load("Prefabs/Player/" + data[data.Count - 1].objectName, typeof(GameObject)), 
-                new Vector3(
-                    data[data.Count - 1].positionX, 
-                    data[data.Count - 1].positionY, 
-                    data[data.Count - 1].positionZ), 
-                new Quaternion(
-                    data[data.Count - 1].rotationX, 
-                    data[data.Count - 1].rotationY, 
-                    data[data.Count - 1].rotationZ, 
-                    data[data.Count - 1].rotationW)
-                ) as GameObject;
-            file.Close();
-        }
+            ////Instantiate the player
+            //GameObject player = Instantiate(
+            //    Resources.Load("Prefabs/Player/" + data[data.Count - 1].objectName, typeof(GameObject)), 
+            //    new Vector3(
+            //        data[data.Count - 1].positionX, 
+            //        data[data.Count - 1].positionY, 
+            //        data[data.Count - 1].positionZ), 
+            //    new Quaternion(
+            //        data[data.Count - 1].rotationX, 
+            //        data[data.Count - 1].rotationY, 
+            //        data[data.Count - 1].rotationZ, 
+            //        data[data.Count - 1].rotationW)
+            //    ) as GameObject;
+            //file.Close();
+        //}
     }
+
+    private IEnumerator LoadYourAsyncScene(string filename)
+    {
+        // The Application loads the Scene in the background at the same time as the current Scene.
+        //This is particularly good for creating loading screens. You could also load the Scene by build //number.
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(filename);
+
+        //Wait until the last operation fully loads to return anything
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+        isLoaded = true;
+    }
+    
 }
 
 [System.Serializable]
